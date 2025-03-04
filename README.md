@@ -5,6 +5,6 @@ Repository for the project of the Deep Learning course.
 
 Lorenzo Cesario - S4220110
 
-Csilla Tijssen - S4
+Csilla Tijssen - S4103246
 
 Felix Schulz - S6
