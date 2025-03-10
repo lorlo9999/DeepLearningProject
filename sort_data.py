@@ -222,3 +222,6 @@ np.save('data/X_train.npy', X_train)
 np.save('data/X_test.npy', X_test)
 np.save('data/y_train.npy',y_train)
 np.save('data/y_test.npy', y_test)
+
+sizes = [len(ind_sf_train)+len(ind_sf_test), len(ind_comp_train) + len(ind_comp_test), len(ind_AGN_train) + len(ind_AGN_test), len(ind_liner_train)+ len(ind_liner_test)]
+np.save('data/sizes.npy', sizes)
