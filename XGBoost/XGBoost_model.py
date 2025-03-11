@@ -3,6 +3,15 @@ from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 
+#=========================================
+# Parameters to Change || Default Value
+#=========================================
+max_depth = 3 # Maximum allowed  Tree depth. To high values lead to overfitting || 6
+n_trees = 30 # Number of trees created || 100
+learning_rate = 0.21 # Eta || 0.3 (Optimal should be 0.11, but testing showed otherwise)
+reg_lambda = 1.63 # L2 regularization term || 1 
+#=========================================
+
 # Loading the Data
 X_train = np.load('../data/X_train.npy')
 y_train = np.load('../data/y_train.npy')
@@ -10,14 +19,16 @@ y_train = np.load('../data/y_train.npy')
 X_test = np.load('../data/X_test.npy')
 y_test = np.load('../data/y_test.npy')
 
-xgb = XGBClassifier(n_estimators = 100,
-                     max_depth = 3,
-                     objective = 'binary:logistic'
+model = XGBClassifier(n_estimators = n_trees,
+                     max_depth = max_depth,
+                     objective = 'binary:logistic',
+                     learning_rate = learning_rate,
+                     reg_lambda = reg_lambda,
                      )
 
-xgb.fit(X_train, y_train)
+model.fit(X_train, y_train)
 
-y_pred = xgb.predict(X_test)
+y_pred = model.predict_proba(X_test)
 
 fpr = {}
 tpr = {}
