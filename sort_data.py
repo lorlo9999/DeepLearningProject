@@ -33,7 +33,7 @@ data['mag_r'][ind_r]=22.5-2.5*np.log10(data['flux_r'][ind_r])
 data['mag_z'][ind_z]=22.5-2.5*np.log10(data['flux_z'][ind_z])
 
 # Sort through these indices
-ind=np.array(list(set(ind1[0]) & set(ind1[0]) &set(ind2[0]) & set(ind3[0]) & set(ind4[0]) & set(ind5[0]) & set(ind6[0]) & set(ind7[0]) & set(ind8[0])))# & set(ind9[0])& set(ind10[0]) ))
+ind=np.array(list(set(ind1[0]) & set(ind2[0]) & set(ind3[0]) & set(ind4[0]) & set(ind5[0]) & set(ind6[0]) & set(ind7[0]) & set(ind8[0])))# & set(ind9[0])& set(ind10[0]) ))
 n_source=len(ind)
 
 # Split into training and test set
