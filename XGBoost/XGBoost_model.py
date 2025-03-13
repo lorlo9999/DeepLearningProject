@@ -2,6 +2,9 @@ import numpy as np
 from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
+from sklearn.utils import resample
+from scipy.interpolate import interp1d
+from tqdm import tqdm
 
 #=========================================
 # Parameters to Change || Default Value
@@ -11,6 +14,7 @@ n_trees = 30 # Number of trees created || 100
 learning_rate = 0.21 # Eta || 0.3 (Optimal should be 0.11, but testing showed otherwise)
 reg_lambda = 1.63 # L2 regularization term || 1 
 #=========================================
+
 
 # Loading the Data
 X_train = np.load('../data/X_train.npy')
@@ -26,9 +30,39 @@ model = XGBClassifier(n_estimators = n_trees,
                      reg_lambda = reg_lambda,
                      )
 
+# Training
 model.fit(X_train, y_train)
 
 y_pred = model.predict_proba(X_test)
+
+model.save_model('../XGBoost/XGB_saved_model.json')
+
+# Prediction with uncertainty
+
+n_bootstraps = 100
+rng = np.random.RandomState(42)
+
+
+all_fprs = {i: [] for i in range(4)}
+all_tprs = {i: [] for i in range(4)}
+
+mean_fpr_interpolated = np.linspace(0, 1, 100)
+
+for i in range(4):
+    for _ in range(n_bootstraps):
+
+        X_resampled, y_resampled = resample(X_test, y_test, random_state=rng)
+        
+        y_prob_resampled = model.predict_proba(X_resampled)
+        
+        fpr_resampled, tpr_resampled, _ = roc_curve(y_resampled[:, i], y_prob_resampled[:, i])
+        
+        f_interp = interp1d(fpr_resampled, tpr_resampled, kind='linear', fill_value="extrapolate")
+        tpr_interpolated = f_interp(mean_fpr_interpolated)
+        
+        all_fprs[i].append(mean_fpr_interpolated)
+        all_tprs[i].append(tpr_interpolated)
+
 
 fpr = {}
 tpr = {}
@@ -42,8 +76,26 @@ plt.figure()
 
 classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
 
+# Plotting the ROC curve with uncertainties
 for i in range(4):
-    plt.plot(fpr[i], tpr[i], lw=2, label=f'{classes[i]} (AUC = {roc_auc[i]:.2f})')
+    
+    all_fprs[i] = np.array(all_fprs[i])
+    all_tprs[i] = np.array(all_tprs[i])
+    
+    
+    mean_tpr = np.mean(all_tprs[i], axis=0)
+    mean_fpr = mean_fpr_interpolated  
+
+    
+    std_tpr = np.std(all_tprs[i], axis=0)
+    nan_to_zero = np.where(np.isnan(std_tpr), 0, std_tpr)
+    std_tpr = nan_to_zero
+
+    
+    plt.fill_between(mean_fpr, mean_tpr - std_tpr, mean_tpr + std_tpr,alpha=0.5)
+    
+    
+    plt.plot(mean_fpr, mean_tpr, label=rf'{classes[i]} (AUC = {roc_auc[i]:.2f}; $\sigma$ = {np.mean(std_tpr):.3f})', lw=2)
 
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
@@ -52,4 +104,28 @@ plt.ylabel('True Positive Rate')
 plt.title('ROC Curve')
 
 plt.legend(loc='lower right')
+plt.savefig('../plots/XGB_ROC.pdf', dpi=400)
+plt.show()
+plt.close()
+
+# Plotting the Feature importance for the XGBC 
+feature = ['O3_index', 'O2_index', 'sigma_star', 'sigma_o3', 'u_g', 'g_r', 'r_i', 'i_z']
+importances = model.feature_importances_
+indices = np.argsort(importances)[::-1]
+ordered_feature_names = []
+ordered_feature_values = []
+for i in indices:
+    ordered_feature_names.append(feature[i])
+    ordered_feature_values.append(importances[i])
+
+print(ordered_feature_names)
+
+plt.figure(figsize=(7,5))
+
+plt.barh(ordered_feature_names, ordered_feature_values, color='green')
+
+plt.xlabel('Feature Value')
+plt.ylabel('Features')
+plt.title('Feature Importance')
+plt.savefig('../plots/XGB_feat_importance.pdf', dpi=400)
 plt.show()

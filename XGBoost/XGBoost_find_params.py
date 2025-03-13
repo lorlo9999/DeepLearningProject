@@ -74,7 +74,7 @@ if type(max_depth_range) != int:
     plt.title('Variation of the Tree Depth')
 
     plt.legend(loc='best')
-    plt.savefig('../plots/XGB_best_tree_depth.png', dpi=dpi)
+    plt.savefig('../plots/XGB_best_tree_depth.pdf', dpi=dpi)
     if show_figures: plt.show()
     best_max_depth = max_x
 
@@ -125,7 +125,7 @@ if type(n_trees_range) != int:
     plt.title('Variation of the Amount of Subtrees')
 
     plt.legend(loc='best')
-    plt.savefig('../plots/XGB_best_n_trees.png', dpi=dpi)
+    plt.savefig('../plots/XGB_best_n_trees.pdf', dpi=dpi)
     if show_figures: plt.show()
 
     best_n_trees = max_x
@@ -177,7 +177,7 @@ if type(learning_rate_range) != int:
     plt.title('Variation of the Learning Rate')
 
     plt.legend(loc='lower right')
-    plt.savefig('../plots/XGB_best_learning_rate.png', dpi=dpi)
+    plt.savefig('../plots/XGB_best_learning_rate.pdf', dpi=dpi)
     if show_figures: plt.show()
 
     best_learning_rate = max_x
@@ -230,5 +230,5 @@ if type(reg_lambda_range) != int:
     plt.title(r'Variation of the Regularization Parameter $\lambda$')
 
     plt.legend(loc='best')
-    plt.savefig('../plots/XGB_best_reg_lambda.png', dpi=dpi)
+    plt.savefig('../plots/XGB_best_reg_lambda.pdf', dpi=dpi)
     if show_figures: plt.show()
