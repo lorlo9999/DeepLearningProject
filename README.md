@@ -39,7 +39,7 @@ We managed to achieve improvements with all approaches.
 |-----------|-------------|
 | *plotting.py* | Python file containing functions to simplify the plotting. |
 | *roc_helper.py* | Python functions for easy ROC plotting. |
-| *sckikit_kfold_classifier.py* | The original code for training the model used in the paper. You select the model to use from: knn, svc, mlp, rf, rf4, rf2. knn=k-nearest neighbors, svc=suport vector classifier, mlp=multi-layer perceptron neural net work, rf=random forest, rf4=random forest. |
+| *sckikit_kfold_classifier.py* | The original code for using a trained model to make classifications to 0.32<z<0.8 emission line galaxies. |
 | *scikit_kfold_training_with_comments* | <span style="color:red">Csilla please write something here</span>. |
 | *sort_data.py* | Python file to create the input features and labels from `data_matched_step2_newz_sm.csv`. It produces `sizes,npy`, `X_test.npy`, `X_train.npy`, `y_test.npy` and `y_train.npy`. |
 
