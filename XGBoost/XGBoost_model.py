@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from sklearn.utils import resample
 from scipy.interpolate import interp1d
-from tqdm import tqdm
 
 #=========================================
 # Parameters to Change || Default Value
