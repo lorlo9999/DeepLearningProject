@@ -17,7 +17,8 @@ reg_lambda_range = np.linspace(0,5,50)
 # Figure settings
 #======================================================
 dpi = 400
-show_figures = False
+show_figures = True
+plt.rcParams.update({'font.size': 12})
 
 # Default Values
 
@@ -225,7 +226,7 @@ if type(reg_lambda_range) != int:
     plt.axvline(x=max_x, linestyle=':')
     plt.text(max_x - 0.005, max_y - 0.008, r'Best $\lambda$ : {:.2f}'.format(max_x), ha='right', fontsize=10)
 
-    plt.xlabel(r'$\lambda')
+    plt.xlabel(r'$\lambda$')
     plt.ylabel('AUC score')
     plt.title(r'Variation of the Regularization Parameter $\lambda$')
 
