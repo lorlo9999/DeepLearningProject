@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from sklearn.utils import resample
 from scipy.interpolate import interp1d
+from sklearn.metrics import classification_report, confusion_matrix
 
 #=========================================
 # Parameters to Change || Default Value
@@ -128,3 +129,10 @@ plt.ylabel('Features')
 plt.title('Feature Importance')
 plt.savefig('../plots/XGB_feat_importance.pdf', dpi=400)
 plt.show()
+
+# Classification Report
+y_pred = model.predict(X_test)
+y_true = np.argmax(y_test, axis=1)
+y_pred = np.argmax(y_pred, axis=1) 
+print(confusion_matrix(y_true, y_pred))
+print(classification_report(y_true, y_pred, target_names=classes))
