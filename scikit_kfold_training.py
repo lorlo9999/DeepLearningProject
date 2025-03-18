@@ -24,10 +24,11 @@ from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.model_selection import StratifiedKFold
 from matplotlib.backends.backend_pdf import PdfPages
-from scipy import interp
+from numpy import interp
 import json
 import pickle
-short=sys.argv[1]
+# short=sys.argv[1]
+short = 'mlp'
 try:
     training_type=sys.argv[2]  # Training type decides if you want to train the model at multiple training sample size. 'multi' will do so. 
 except:
@@ -45,7 +46,7 @@ def calculate_accuracy_arr(test):
         accuracy=[float(len(ind_sf[0]))/n_all,float(len(ind_comp[0]))/n_all,float(len(ind_AGN[0]))/n_all,float(len(ind_liner[0]))/n_all]
     return accuracy
 
-data = Table.read('data_matched_step2_newz_sm.csv',format='ascii.csv',header_start=0,data_start=1)
+data = Table.read('data/data_matched_step2_newz_sm.csv',format='ascii.csv',header_start=0,data_start=1)
 ind1=np.where(np.array(data['o3']/data['o3_err']) >3)
 ind2=np.where(np.array((data['o21']+data['o22'])/np.sqrt(data['o21_err']**2+data['o22_err']**2)) >3)
 ind3=np.where(np.array(data['hb']/data['hb_err']) >3)
