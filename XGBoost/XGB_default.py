@@ -9,10 +9,10 @@ from sklearn.metrics import classification_report, confusion_matrix
 #=========================================
 # Parameters to Change || Default Value
 #=========================================
-max_depth = 3 # Maximum allowed  Tree depth. To high values lead to overfitting || 6
-n_trees = 30 # Number of trees created || 100
-learning_rate = 0.21 # Eta || 0.3 (Optimal should be 0.11, but testing showed otherwise)
-reg_lambda = 1.63 # L2 regularization term || 1 
+# max_depth = 3 # Maximum allowed  Tree depth. To high values lead to overfitting || 6
+# n_trees = 30 # Number of trees created || 100
+# learning_rate = 0.21 # Eta || 0.3 (Optimal should be 0.11, but testing showed otherwise)
+# reg_lambda = 1.63 # L2 regularization term || 1 
 #=========================================
 
 
@@ -23,19 +23,12 @@ y_train = np.load('../data/y_train.npy')
 X_test = np.load('../data/X_test.npy')
 y_test = np.load('../data/y_test.npy')
 
-model = XGBClassifier(n_estimators = n_trees,
-                     max_depth = max_depth,
-                     objective = 'binary:logistic',
-                     learning_rate = learning_rate,
-                     reg_lambda = reg_lambda,
-                     )
+model = XGBClassifier(objective = 'binary:logistic')
 
 # Training
 model.fit(X_train, y_train)
 
 y_pred = model.predict_proba(X_test)
-
-model.save_model('../XGBoost/XGB_saved_model.json')
 
 # Prediction with uncertainty
 
@@ -102,34 +95,12 @@ plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.title('ROC Curve')
+plt.title('XGB ROC Curve with Default Settings')
 
 plt.legend(loc='lower right')
-plt.savefig('../plots/XGB_ROC.pdf', dpi=400)
+plt.savefig('../plots/XGB_default.pdf', dpi=400)
 plt.show()
 plt.close()
-
-# Plotting the Feature importance for the XGBC 
-feature = ['O3_index', 'O2_index', 'sigma_star', 'sigma_o3', 'u_g', 'g_r', 'r_i', 'i_z']
-importances = model.feature_importances_
-indices = np.argsort(importances)[::-1]
-ordered_feature_names = []
-ordered_feature_values = []
-for i in indices:
-    ordered_feature_names.append(feature[i])
-    ordered_feature_values.append(importances[i])
-
-print(ordered_feature_names)
-
-plt.figure(figsize=(7,5))
-
-plt.barh(ordered_feature_names, ordered_feature_values, color='green')
-
-plt.xlabel('Feature Value')
-plt.ylabel('Features')
-plt.title('Feature Importance')
-plt.savefig('../plots/XGB_feat_importance.pdf', dpi=400)
-plt.show()
 
 # Classification Report
 y_pred = model.predict(X_test)
