@@ -1,6 +1,7 @@
 import numpy as np
 from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 12})
 from sklearn.metrics import roc_curve, auc
 from sklearn.utils import resample
 from scipy.interpolate import interp1d
@@ -95,7 +96,7 @@ for i in range(4):
     plt.fill_between(mean_fpr, mean_tpr - std_tpr, mean_tpr + std_tpr,alpha=0.5)
     
     
-    plt.plot(mean_fpr, mean_tpr, label=rf'{classes[i]} (AUC = {roc_auc[i]:.2f}; $\sigma$ = {np.mean(std_tpr):.3f})', lw=2)
+    plt.plot(mean_fpr, mean_tpr, label=rf'{classes[i]} (AUC = {roc_auc[i]:.3f}; $\sigma$ = {np.mean(std_tpr):.3f})', lw=2)
 
 plt.plot([0, 1], [0, 1], color='gray', lw=2, linestyle='--')
 plt.xlim([0.0, 1.0])
@@ -103,9 +104,9 @@ plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('ROC Curve')
-
+plt.tight_layout()
 plt.legend(loc='lower right')
-plt.savefig('../plots/XGB_ROC.pdf', dpi=400)
+plt.savefig('../plots/XGB_ROC.pdf', dpi=400, bbox_inches='tight')
 plt.show()
 plt.close()
 
@@ -121,19 +122,24 @@ for i in indices:
 
 print(ordered_feature_names)
 
-plt.figure(figsize=(7,5))
+plt.figure()
 
 plt.barh(ordered_feature_names, ordered_feature_values, color='green')
-
+plt.tight_layout(pad=2)
 plt.xlabel('Feature Value')
 plt.ylabel('Features')
 plt.title('Feature Importance')
-plt.savefig('../plots/XGB_feat_importance.pdf', dpi=400)
+plt.savefig('../plots/XGB_feat_importance.pdf', dpi=400, bbox_inches='tight')
 plt.show()
 
 # Classification Report
 y_pred = model.predict(X_test)
 y_true = np.argmax(y_test, axis=1)
 y_pred = np.argmax(y_pred, axis=1) 
-print(confusion_matrix(y_true, y_pred))
+cm = confusion_matrix(y_true, y_pred)
+# print(confusion_matrix(y_true, y_pred))
 print(classification_report(y_true, y_pred, target_names=classes))
+per_class_accuracy = cm.diagonal()/cm.sum(axis=1)
+print('Accuracy per class:')
+for i,acc in enumerate(per_class_accuracy):
+    print(f'{classes[i]}: {acc:.3f}')

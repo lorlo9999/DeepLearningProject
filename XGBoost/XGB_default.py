@@ -88,7 +88,7 @@ for i in range(4):
     plt.fill_between(mean_fpr, mean_tpr - std_tpr, mean_tpr + std_tpr,alpha=0.5)
     
     
-    plt.plot(mean_fpr, mean_tpr, label=rf'{classes[i]} (AUC = {roc_auc[i]:.2f}; $\sigma$ = {np.mean(std_tpr):.3f})', lw=2)
+    plt.plot(mean_fpr, mean_tpr, label=rf'{classes[i]} (AUC = {roc_auc[i]:.3f}; $\sigma$ = {np.mean(std_tpr):.3f})', lw=2)
 
 plt.plot([0, 1], [0, 1], color='gray', lw=2, linestyle='--')
 plt.xlim([0.0, 1.0])
