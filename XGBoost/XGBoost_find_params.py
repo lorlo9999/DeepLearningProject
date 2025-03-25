@@ -29,6 +29,8 @@ y_train = np.load('../data/y_train.npy')
 X_test = np.load('../data/X_test.npy')
 y_test = np.load('../data/y_test.npy')
 
+classes = ['SF', 'Composite', 'AGN', 'LINER']
+
 if type(max_depth_range) != int:
 
     # 0: SF, 1: composite, 2: AGN, 3: LINER
@@ -59,8 +61,6 @@ if type(max_depth_range) != int:
 
     plt.figure()
 
-    classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
-
     for i in range(4):
         plt.plot(max_depth_range,auc_list[i], label=f'{classes[i]}')
     
@@ -75,6 +75,7 @@ if type(max_depth_range) != int:
     plt.title('Variation of the Tree Depth')
 
     plt.legend(loc='best')
+    plt.savefig('../plots/XGB_best_tree_depth.pdf', dpi=dpi)
     plt.savefig('../plots/XGB_best_tree_depth.pdf', dpi=dpi)
     if show_figures: plt.show()
     best_max_depth = max_x
@@ -110,8 +111,6 @@ if type(n_trees_range) != int:
 
     plt.figure()
 
-    classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
-
     for i in range(4):
         plt.plot(n_trees_range,auc_list[i], label=f'{classes[i]}')
     
@@ -127,6 +126,7 @@ if type(n_trees_range) != int:
 
     plt.legend(loc='best')
     plt.savefig('../plots/XGB_best_n_trees.pdf', dpi=dpi)
+    plt.savefig('../plots/XGB_best_n_trees.png', dpi=dpi)
     if show_figures: plt.show()
 
     best_n_trees = max_x
@@ -162,7 +162,6 @@ if type(learning_rate_range) != int:
 
     plt.figure()
 
-    classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
 
     for i in range(4):
         plt.plot(learning_rate_range,auc_list[i], label=f'{classes[i]}')
@@ -178,6 +177,7 @@ if type(learning_rate_range) != int:
     plt.title('Variation of the Learning Rate')
 
     plt.legend(loc='lower right')
+    plt.savefig('../plots/XGB_best_learning_rate.pdf', dpi=dpi)
     plt.savefig('../plots/XGB_best_learning_rate.pdf', dpi=dpi)
     if show_figures: plt.show()
 
@@ -215,8 +215,6 @@ if type(reg_lambda_range) != int:
 
     plt.figure()
 
-    classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
-
     for i in range(4):
         plt.plot(reg_lambda_range,auc_list[i], label=f'{classes[i]}')
     
@@ -232,4 +230,5 @@ if type(reg_lambda_range) != int:
 
     plt.legend(loc='best')
     plt.savefig('../plots/XGB_best_reg_lambda.pdf', dpi=dpi)
+    plt.savefig('../plots/XGB_best_reg_lambda.png', dpi=dpi)
     if show_figures: plt.show()

@@ -6,6 +6,7 @@ from sklearn.metrics import roc_curve, auc
 from sklearn.utils import resample
 from scipy.interpolate import interp1d
 from sklearn.metrics import classification_report, confusion_matrix
+import seaborn as sns
 
 #=========================================
 # Parameters to Change || Default Value
@@ -34,9 +35,9 @@ model = XGBClassifier(n_estimators = n_trees,
 # Training
 model.fit(X_train, y_train)
 
-y_pred = model.predict_proba(X_test)
-
 model.save_model('../XGBoost/XGB_saved_model.json')
+
+y_pred = model.predict_proba(X_test)
 
 # Prediction with uncertainty
 
@@ -75,9 +76,11 @@ for i in range(4):
 
 plt.figure()
 
-classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
+classes = ['SF', 'Composite', 'AGN', 'LINER']
 
+# === PLOT 1 ===
 # Plotting the ROC curve with uncertainties
+
 for i in range(4):
     
     all_fprs[i] = np.array(all_fprs[i])
@@ -107,10 +110,13 @@ plt.title('ROC Curve')
 plt.tight_layout()
 plt.legend(loc='lower right')
 plt.savefig('../plots/XGB_ROC.pdf', dpi=400, bbox_inches='tight')
+plt.savefig('../plots/XGB_ROC.png', dpi=400, bbox_inches='tight')
 plt.show()
 plt.close()
 
+# === PLOT 2 ===
 # Plotting the Feature importance for the XGBC 
+
 feature = ['O3_index', 'O2_index', 'sigma_star', 'sigma_o3', 'u_g', 'g_r', 'r_i', 'i_z']
 importances = model.feature_importances_
 indices = np.argsort(importances)[::-1]
@@ -130,16 +136,58 @@ plt.xlabel('Feature Value')
 plt.ylabel('Features')
 plt.title('Feature Importance')
 plt.savefig('../plots/XGB_feat_importance.pdf', dpi=400, bbox_inches='tight')
+plt.savefig('../plots/XGB_feat_importance.png', dpi=400, bbox_inches='tight')
 plt.show()
 
+# === PLOT 3 ===
+# Visualizing the most important features
+
+top2_idx = np.argsort(importances)[-2:]
+X_top2 = X_train[:, top2_idx]
+
+# I want to color in the classes in the plot
+y_classes = np.argmax(y_train, axis=1)  # Convert to class labels
+
+# Scatter plot
+plt.figure()
+cmap = plt.cm.tab10
+for i, c in enumerate(classes):
+    idx = np.where(y_classes == i)
+    plt.scatter(x=X_top2[idx, 0], y=X_top2[idx, 1], color=cmap(i), label=c, alpha=0.7, s=4)
+
+# Labels and title
+plt.xlabel(r'$\log\sigma*$')
+plt.ylabel(r'$\log [OII]/H\beta$')
+plt.title('Distribution of the two Most Important Features')
+plt.legend(loc='best',title='Actual Classes')
+plt.tight_layout()
+plt.savefig('../plots/XGB_top2_features.pdf', dpi=400)
+plt.savefig('../plots/XGB_top2_features.png', dpi=400)
+plt.show()
+
+# === PLOT 4 ===
 # Classification Report
+
 y_pred = model.predict(X_test)
 y_true = np.argmax(y_test, axis=1)
 y_pred = np.argmax(y_pred, axis=1) 
-cm = confusion_matrix(y_true, y_pred)
-# print(confusion_matrix(y_true, y_pred))
+cm = confusion_matrix(y_true, y_pred, normalize='true')
+plt.figure()
+sns.heatmap(cm, annot=True, fmt='.2f', cmap=plt.cm.Blues, xticklabels=classes, yticklabels=classes)
+plt.title('XGBClassifier Confusion Matrix')
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+plt.tight_layout()
+plt.savefig('../plots/XGB_confusion_matrix.pdf', dpi=400)
+plt.savefig('../plots/XGB_confusion_matrix.png', dpi=400)
+plt.show()
+
+
 print(classification_report(y_true, y_pred, target_names=classes))
 per_class_accuracy = cm.diagonal()/cm.sum(axis=1)
 print('Accuracy per class:')
 for i,acc in enumerate(per_class_accuracy):
     print(f'{classes[i]}: {acc:.3f}')
+
+
+

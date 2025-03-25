@@ -20,7 +20,7 @@ roc_auc = {}
 
 plt.figure()
 
-classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
+classes = ['SF', 'Composite', 'AGN', 'LINER']
 
 for i in range(4):
     fpr[i], tpr[i], _ = roc_curve(y_xdata[:, i], y_pred[:, i])
@@ -36,6 +36,7 @@ plt.title('ROC Curve for the Additional Data')
 
 plt.legend(loc='lower right')
 plt.savefig('../plots/XGB_extra_data.pdf', dpi=400)
+plt.savefig('../plots/XGB_extra_data.png', dpi=400)
 plt.show()
 plt.close()
 
