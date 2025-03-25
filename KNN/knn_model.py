@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 12})
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_curve, auc, classification_report, confusion_matrix
 from sklearn.utils import resample
@@ -59,6 +60,7 @@ plt.plot([0, 1], [0, 1], color='gray', lw=2, linestyle='--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate')
+plt.tight_layout(pad=2)
 plt.ylabel('True Positive Rate')
 plt.title('k-Nearest Neighbour ROC')
 plt.legend(loc='lower right')
