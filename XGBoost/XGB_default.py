@@ -67,7 +67,7 @@ for i in range(4):
 
 plt.figure()
 
-classes = ['Star-Forming', 'Composite', 'AGN', 'LINER']
+classes = ['SF', 'Composite', 'AGN', 'LINER']
 
 # Plotting the ROC curve with uncertainties
 for i in range(4):
@@ -99,6 +99,7 @@ plt.title('XGB ROC Curve with Default Settings')
 
 plt.legend(loc='lower right')
 plt.savefig('../plots/XGB_default.pdf', dpi=400)
+plt.savefig('../plots/XGB_default.png', dpi=400)
 plt.show()
 plt.close()
 
