@@ -16,6 +16,9 @@ n_trees = 30 # Number of trees created || 100
 learning_rate = 0.21 # Eta || 0.3 (Optimal should be 0.11, but testing showed otherwise)
 reg_lambda = 1.63 # L2 regularization term || 1 
 #=========================================
+use_balancing = True # This will adjust the decision thresholds for our final preidctions, following the class imbalances
+thresholds = {0: 0.7, 1: 0.3, 2: 0.25, 3: 0.3} # Thresholds for each class, 1:SF, 2:Composite, 3:AGN, 4:LINER
+#=========================================
 
 
 # Loading the Data
@@ -38,8 +41,6 @@ model.fit(X_train, y_train)
 model.save_model('../XGBoost/XGB_saved_model.json')
 
 y_pred = model.predict_proba(X_test)
-
-# Prediction with uncertainty
 
 n_bootstraps = 100
 rng = np.random.RandomState(42)
@@ -168,22 +169,31 @@ plt.show()
 # === PLOT 4 ===
 # Classification Report
 
-y_pred = model.predict(X_test)
+y_final_pred = np.argmax(y_pred, axis=1) # De-one-hot-encode
+
+if use_balancing: # This adjusts the final predicitions if set to True
+    for class_idx, threshold in thresholds.items():
+        y_final_pred[(y_pred[:, class_idx] > threshold) & (y_final_pred != class_idx)] = class_idx
+
 y_true = np.argmax(y_test, axis=1)
-y_pred = np.argmax(y_pred, axis=1) 
-cm = confusion_matrix(y_true, y_pred, normalize='true')
+cm = confusion_matrix(y_true, y_final_pred, normalize='true')
 plt.figure()
 sns.heatmap(cm, annot=True, fmt='.2f', cmap=plt.cm.Blues, xticklabels=classes, yticklabels=classes)
-plt.title('XGBClassifier Confusion Matrix')
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
-plt.tight_layout()
-plt.savefig('../plots/XGB_confusion_matrix.pdf', dpi=400)
-plt.savefig('../plots/XGB_confusion_matrix.png', dpi=400)
+plt.tight_layout(pad=2)
+if use_balancing:
+    plt.title('XGBClassifier Confusion Matrix (Rebalanced)')
+    plt.savefig('../plots/XGB_cm_balanced.pdf', dpi=400)
+    plt.savefig('../plots/XGB_cm_balanced.png', dpi=400)   
+else:
+    plt.title('XGBClassifier Confusion Matrix')
+    plt.savefig('../plots/XGB_cm.pdf', dpi=400)
+    plt.savefig('../plots/XGB_cm.png', dpi=400)
 plt.show()
 
 
-print(classification_report(y_true, y_pred, target_names=classes))
+print(classification_report(y_true, y_final_pred, target_names=classes))
 per_class_accuracy = cm.diagonal()/cm.sum(axis=1)
 print('Accuracy per class:')
 for i,acc in enumerate(per_class_accuracy):
