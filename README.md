@@ -94,7 +94,9 @@ This folder contains all of the plots as PDF files.
 
 | Filename | Description |
 |-----------|-------------|
+| *XGB_default.py* | Python file to run the XGBClassifier with its default settings. |
 | *XGB_saved_model.json* | File containing the fitted XGBoost classifier. |
 | *XGBoost_find_params.py* | Python file to determine the optimal hyperparameters for creating the XGBClassifier. |
 | *XGBoosted_model.py* | Python file for creating and evaluating the XGBClassifier. |
+| *XGBoost_new_data.py* | Python file to load the XGBClassifier and predict the intermediate redshift sources with it.|
 
