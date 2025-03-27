@@ -28,12 +28,15 @@ from numpy import interp
 import json
 import pickle
 # short=sys.argv[1]
+
+# Define your type of training, 'rf', 'knn', 'svc', or 'mlp'
 short = 'mlp'
 try:
     training_type=sys.argv[2]  # Training type decides if you want to train the model at multiple training sample size. 'multi' will do so. 
 except:
     training_type='single'
 
+# Calculate the accuracy of the for classifications with this function
 def calculate_accuracy_arr(test):
     n_all=len(test)
     ind_sf=np.where(test==1)
@@ -46,6 +49,7 @@ def calculate_accuracy_arr(test):
         accuracy=[float(len(ind_sf[0]))/n_all,float(len(ind_comp[0]))/n_all,float(len(ind_AGN[0]))/n_all,float(len(ind_liner[0]))/n_all]
     return accuracy
 
+# Sort through the data to only get 'real' data, no noise. For example the S/N must be larger than 3 
 data = Table.read('data/data_matched_step2_newz_sm.csv',format='ascii.csv',header_start=0,data_start=1)
 ind1=np.where(np.array(data['o3']/data['o3_err']) >3)
 ind2=np.where(np.array((data['o21']+data['o22'])/np.sqrt(data['o21_err']**2+data['o22_err']**2)) >3)
@@ -58,19 +62,20 @@ ind8=np.where(np.array(data['VDISP'])>0.)
 ind9=np.where(np.array(data['mag_u'])>10.)
 ind10=np.where(np.array(data['flux_w1'])>0.)
 
-
-
 ind_g=np.where(np.array(data['flux_g']) >0.)
 ind_r=np.where(np.array(data['flux_r']) >0.)
 ind_z=np.where(np.array(data['flux_z']) >0.)
+
+# Calculate absolute magnitude (I think)
 data['mag_g'][ind_g]=22.5-2.5*np.log10(data['flux_g'][ind_g])
 data['mag_r'][ind_r]=22.5-2.5*np.log10(data['flux_r'][ind_r])
 data['mag_z'][ind_z]=22.5-2.5*np.log10(data['flux_z'][ind_z])
 
-
-
+# Sort through these indices to get the 'real' data
 ind=np.array(list(set(ind1[0]) & set(ind1[0]) &set(ind2[0]) & set(ind3[0]) & set(ind4[0]) & set(ind5[0]) & set(ind6[0]) & set(ind7[0]) & set(ind8[0])))# & set(ind9[0])& set(ind10[0]) ))
 n_source=len(ind)
+
+# Split into training and test set
 n_split=int(n_source*0.7)
 ind_train=ind[0:n_split]
 ind_test=ind[n_split:]
@@ -78,6 +83,8 @@ n_train=len(ind_train)
 n_test=len(ind_test)
 type_arr=np.zeros(len(ind))
 type_arr=type_arr-999
+
+# Get/define the 8 input features
 z=np.array(data['z'][ind])
 O2_index=np.log10((data['o21'][ind]+data['o22'][ind])/data['hb'][ind])
 O3_index=np.log10(data['o3'][ind]/data['hb'][ind])
@@ -89,7 +96,12 @@ u_g=data['mag_u'][ind]-data['mag_g'][ind]
 g_r=data['mag_g'][ind]-data['mag_r'][ind]
 r_i=data['mag_r'][ind]-data['mag_i'][ind]
 i_z=data['mag_i'][ind]-data['mag_z'][ind]
+
+# Correct the redshift, but this is not really used afterwards so dunno why they do this
 z_w1=data['mag_z'][ind]-(22.5-2.5*np.log10(data['flux_w1'][ind]))
+
+# Classify the galaxies into one of the four classes: star-forming galaxies, composite galaxies, 
+# active galactic nuclei (AGNs), or low-ionization nuclear emission regions (LINERs) 
 ind_sf1=np.where(O3_index <= (0.61/(N2_index-0.05)+1.3))
 ind_sf2=np.where( N2_index < 0.)
 ind_sf=np.array(list(set(ind_sf1[0]) & set(ind_sf2[0])))
@@ -114,11 +126,11 @@ type_arr[ind_comp]=2
 type_arr[ind_AGN]=3
 type_arr[ind_liner]=4
 
-
-
+# Making the training classifications
 type_arr_train=np.zeros(len(ind_train))
 type_arr_train=type_arr_train-999
 
+# Get/define the features for the training
 O2_index_train=np.log10((data['o21'][ind_train]+data['o22'][ind_train])/data['hb'][ind_train])
 O3_index_train=np.log10(data['o3'][ind_train]/data['hb'][ind_train])
 N2_index_train=np.log10(data['n2'][ind_train]/data['ha'][ind_train])
@@ -132,7 +144,7 @@ i_z_train=data['mag_i'][ind_train]-data['mag_z'][ind_train]
 z_w1_train=data['mag_z'][ind_train]-(22.5-np.log10(data['flux_w1'][ind_train]))
 sm_train=data['sm'][ind_train]
 
-
+# Classification 
 ind_sf1_train=np.where(O3_index_train <= (0.61/(N2_index_train-0.05)+1.3))
 ind_sf2_train=np.where( N2_index_train < 0.)
 ind_sf_train=np.array(list(set(ind_sf1_train[0]) & set(ind_sf2_train[0])))
@@ -198,6 +210,7 @@ type_arr_test[ind_comp_test]=2
 type_arr_test[ind_AGN_test]=3
 type_arr_test[ind_liner_test]=4
 
+# Making a catalog of the different classifications
 ind_this=ind_sf
 os.system('rm catalog_lowz*.dat')
 f=open('catalog_lowz_sf.dat','w')
@@ -245,6 +258,8 @@ markersize=1
 ### Learning Code starts here #####
 ######################################
 n_round=10000
+
+# If you use multiple batches, then divide these into 5 batches, otherwise keep all 10 000
 if training_type=='multi':
     mark_points=(1+np.arange(50))*0.02*float(n_round)
 else:
@@ -266,7 +281,10 @@ median_comp=[]
 median_AGN=[]
 median_liner=[]
 
+# Your 8 input features
 var_arr=['O3_index','O2_index','sigma_star','sigma_o3','u_g','g_r','r_i','i_z']
+
+# Calculate normalized median features
 for var in var_arr:
     cmd='t=(np.median('+var+'[ind_sf])-np.percentile('+var+',5))/(np.percentile('+var+',95)-np.percentile('+var+',5))'
     exec(cmd)
@@ -374,9 +392,6 @@ cbarlabel='normalized value'
 cbar = fig.colorbar(im)
 cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
 """
-
-
-
 
 
 for j in range(n_mark_points):

@@ -115,10 +115,6 @@ mag_r=22.5-2.5*np.log10(maggie_r)
 mag_i=22.5-2.5*np.log10(maggie_i)
 mag_z=22.5-2.5*np.log10(maggie_z)
 
-#u_g=data['mag_u'][ind]-data['mag_g'][ind]
-#g_r=data['mag_g'][ind]-data['mag_r'][ind]
-#r_i=data['mag_r'][ind]-data['mag_i'][ind]
-#i_z=data['mag_i'][ind]-data['mag_z'][ind]
 u_g=mag_u-mag_g
 g_r=mag_g-mag_r
 r_i=mag_r-mag_i
