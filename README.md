@@ -71,8 +71,11 @@ We also recreated the results for each method that the paper used. Additionally,
 ### > NeuralNetwork
 | Filename | Description |
 |-----------|-------------|
-| *NeuralNetwork.ipynb* | Jupyter notebook for the training and evaluation of the neural network. |
-| *NN.h5* | The weights of the trained network.|
+| *NeuralNetwork.ipynb* | Jupyter notebook for the training and testing of the neural network. |
+| *NN_model.keras* | The saved complete neural network model for easy importation and using. |
+
+| *ColorsNN.ipynb* | Jupyter notebook for training and testing of neural network limited to the 4 color features. |
+| *OpticalNN.ipynb* | Jupyter notebook for training and testing of neural network limited to the 4 optical features. |
 
 ### > plots
 
@@ -82,7 +85,7 @@ This folder contains all of the plots as PDF files.
 
 | Filename | Description |
 |-----------|-------------|
-| *RandomForest.ipynb* | Jupyter notebook for the training and evaluation of the random forest model. |
+| *RandomForest.ipynb* | Jupyter notebook for the training and testing of the random forest model. |
 | *RF_model.pkl* | The saved RF model. |
 
 ### > SVC
