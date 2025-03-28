@@ -86,7 +86,7 @@ This folder contains all of the plots as PDF files.
 | Filename | Description |
 |-----------|-------------|
 | *RandomForest.ipynb* | Jupyter notebook for the training and testing of the random forest model. |
-| *RF_model.pkl* | The saved RF model. |
+| *random_forest_model.pkl* | The saved RF model, currently not included as it was too heavy to push. If the notebook is run it will appear here. |
 
 ### > SVC
 | Filename | Description |
