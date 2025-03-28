@@ -1,4 +1,4 @@
-# Improving the Classification for Intermediate Redshift Emission-line Galaxies
+# Improving the Classification for Low Redshift Emission-line Galaxies
 
 Repository for the final project in "Deep Learning in Physics".
 This project is based on improving the results of [Zhang et al. (2019)](https://ui.adsabs.harvard.edu/abs/2019ApJ...883...63Z/abstract), the corresponding GitHub repository can be found [here](https://github.com/zkdtc/MLC_ELGs)
